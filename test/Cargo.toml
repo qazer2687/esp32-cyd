@@ -1,0 +1,44 @@
+[package]
+name = "test"
+version = "0.1.0"
+edition = "2021"
+resolver = "2"
+rust-version = "1.75"
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true    # Symbols are nice and they don't increase the size on Flash
+opt-level = "z"
+
+[features]
+default = ["std", "embassy", "esp-idf-svc/native"]
+
+pio = ["esp-idf-svc/pio"]
+std = ["alloc", "esp-idf-svc/binstart", "esp-idf-svc/std"]
+alloc = ["esp-idf-svc/alloc"]
+nightly = ["esp-idf-svc/nightly"]
+experimental = ["esp-idf-svc/experimental"]
+embassy = ["esp-idf-svc/embassy-sync", "esp-idf-svc/critical-section", "esp-idf-svc/embassy-time-driver"]
+
+[dependencies]
+log = { version = "0.4", default-features = false }
+esp-idf-svc = { version = "0.51", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
+embedded-graphics = "0.8.1"
+ili9341 = "0.6.0"
+esp-idf-hal = "0.45.2"
+mipidsi = "0.7.1"
+esp-idf-sys = "0.36.1"
+# incompatible with mipdsi 0.7.1 until https://github.com/almindor/mipidsi/pull/104
+#display-interface = "0.5.0"
+#display-interface-spi = "0.5.0"
+display-interface = "0.4.0"
+display-interface-spi = "0.4.0"
+chrono = "0.4.39"
+heapless = "0.8.0"
+embedded-svc = "0.28.1"
+anyhow = "1.0.95"
+
+[build-dependencies]
+embuild = "0.33.0"

@@ -1,0 +1,6 @@
+**/.vscode
+**/.direnv
+**/.embuild
+**/target
+**/Cargo.lock
+**/core
