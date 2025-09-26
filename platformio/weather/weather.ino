@@ -23,8 +23,6 @@ void setup(){
   tft.drawString("Connecting to WiFi...",0,0);
   WiFi.begin(ssid,password); while(WiFi.status()!=WL_CONNECTED) delay(500);
 
-  // clear screen to black
-  tft.fillScreen(0x0000);
 }
 
 void loop(){
@@ -33,46 +31,50 @@ void loop(){
 
   HTTPClient http;
   http.begin(url);
-  
-  String body = http.getString();
-  int idx = body.indexOf("\"current_weather\":");
-  String cw = body.substring(idx);
-  float temp = parseNum(cw,"\"temperature\"");
-  float wind = parseNum(cw,"\"windspeed\"");
+  int code = http.GET();
+  if(code == 200){
+    String body = http.getString();
+    int idx = body.indexOf("\"current_weather\":");
+    if(idx >= 0){
+      String cw = body.substring(idx);
+      tft.fillScreen(0x0000);
+      float temp = parseNum(cw,"\"temperature\"");
+      float wind = parseNum(cw,"\"windspeed\"");
 
 
-  String title = " -- Brighton Weather --";
-  tft.drawString(title, (tft.width() - tft.textWidth(title)) / 2, 4);
+      String title = " -- Brighton Weather --";
+      tft.drawString(title, (tft.width() - tft.textWidth(title)) / 2, 4);
 
-  String temperature = "Temperature: " + String(temp, 1) + " C";
-  tft.drawString(temperature, (tft.width() - tft.textWidth(temperature)) / 2, 36);
+      String temperature = "Temperature: " + String(temp, 1) + " C";
+      tft.drawString(temperature, (tft.width() - tft.textWidth(temperature)) / 2, 36);
 
-  String windSpeed = "Wind Speed: " + String(wind,1) + " km/h";
-  tft.drawString(windSpeed, (tft.width() - tft.textWidth(windSpeed)) / 2, 60);
+      String windSpeed = "Wind Speed: " + String(wind,1) + " km/h";
+      tft.drawString(windSpeed, (tft.width() - tft.textWidth(windSpeed)) / 2, 60);
 
-  int tempInt = (int)temp;
-  String tempMessage;
+      int tempInt = (int)temp;
+      String tempMessage;
 
-  switch (tempInt) {
-    case 0 ... 8:
-      tempMessage = "Freezing!!";
-      break;
-    case 9 ... 14:
-      tempMessage = "Pretty cold!";
-      break;
-    case 15 ... 22:
-      tempMessage = "Just right!";
-      break;
-    case 23 ... 30:
-      tempMessage = "It's hot!";
-      break;
-    default:
-      tempMessage = "Extreme weather!";
-      break;
+      switch (tempInt) {
+        case 0 ... 8:
+          tempMessage = "Freezing!!";
+          break;
+        case 9 ... 14:
+          tempMessage = "Pretty cold!";
+          break;
+        case 15 ... 22:
+          tempMessage = "Just right!";
+          break;
+        case 23 ... 30:
+          tempMessage = "It's hot!";
+          break;
+        default:
+          tempMessage = "Extreme weather!";
+          break;
+      }
+
+      tft.drawString(tempMessage, (tft.width() - tft.textWidth(tempMessage)) / 2, 180);
+    }
   }
-
-  tft.drawString(tempMessage, (tft.width() - tft.textWidth(tempMessage)) / 2, 200);
-
   http.end();
   delay(5000);
 }
